@@ -19,12 +19,13 @@ encodeambani = face_recognition.face_encodings(imgambani)[0]
 encodeambanitest = face_recognition.face_encodings(imgambanitest)[0]
 encodetata = face_recognition.face_encodings(imgtata)[0]
 # placing rectangle on facelocation
+
 cv2.rectangle(imgambani,(ambanifaceloc[3],ambanifaceloc[0]),(ambanifaceloc[1],ambanifaceloc[2]),(255,0,255),2)
 cv2.rectangle(imgambanitest,(ambanitestfaceloc[3],ambanitestfaceloc[0]),(ambanitestfaceloc[1],ambanitestfaceloc[2]),(255,0,255),2)
 cv2.rectangle(imgtata,(tatafaceloc[3],tatafaceloc[0]),(tatafaceloc[1],tatafaceloc[2]),(255,0,255),2)
 # comapring faces and face distances
-result = face_recognition.compare_faces([encodeambanitest],encodeambani)
-dist = face_recognition.face_distance([encodeambanitest],encodeambani)
+result = face_recognition.compare_faces([encodetata],encodeambani)
+dist = face_recognition.face_distance([encodetata],encodeambani)
 print(result,dist)
 # testing if loaded it correctly
 cv2.imshow('ambani',imgambani)
