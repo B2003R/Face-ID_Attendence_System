@@ -2,6 +2,7 @@ import cv2
 import os
 import face_recognition
 import numpy as np
+import dlib
 
 path = 'faces'
 images = []
@@ -23,53 +24,57 @@ def findencoding(images):
 
 databaseencoding = findencoding(images)
 
-cap = cv2.VideoCapture(0)
-i=0
-# while(True):
-#     i=i+1
-#     success, img = cap.read()
-#     facelocation = face_recognition.face_locations(img,number_of_times_to_upsample=0,model="hog")
-#     # print(facelocation)
-#     y1,x2,y2,x1=0,0,0,0
-#     if(len(facelocation) == 1):
-#         y1,x2,y2,x1 = facelocation[0]
-#     cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
-#     cv2.imshow('webcam', img)
-#     cv2.waitKey(1)
-
 # capturing faces from camera
 cap = cv2.VideoCapture(0)
-# while(1):
-success, img = cap.read()
 i = 0
 while (i<100):
     i = i+1
     success, img2 = cap.read()
+    # resizing the captured images and converting them to rgb
+    # this will increase the speed of face id
+    imgs = cv2.resize(img2,(0,0),None,0.25,0.25)
+    imgs = cv2.cvtColor(imgs,cv2.COLOR_BGR2RGB)
+    # capture a image
     if(i == 50):
-        img = img2
-    facelocation = face_recognition.face_locations(img2, number_of_times_to_upsample=0, model="hog")
+        img = imgs
+    # identify face location
+    facelocation = face_recognition.face_locations(imgs, number_of_times_to_upsample=2, model="hog")
     # print(facelocation)
     y1, x2, y2, x1 = 0, 0, 0, 0
     if (len(facelocation) == 1):
         y1, x2, y2, x1 = facelocation[0]
+    y1,x2,y2,x1 = y1*4,x2*4,y2*4,x1*4
+    # get coordinates
+    # print a rectangle box
     cv2.rectangle(img2, (x1, y1), (x2, y2), (0, 255, 0), 2)
     cv2.imshow('webcam', img2)
     cv2.waitKey(1)
 # resizing the captured images and converting them to rgb
-imgs = cv2.resize(img,(0,0),None,0.25,0.25)
-imgs = cv2.cvtColor(imgs,cv2.COLOR_BGR2RGB)
+# imgs = cv2.resize(img,(0,0),None,0.25,0.25)
+# imgs = cv2.cvtColor(imgs,cv2.COLOR_BGR2RGB)
+# #finding face encodings
+# encodefaces = face_recognition.face_encodings(imgs)
+# print(encodefaces)
+# for encodeface in encodefaces :
+#     matches = face_recognition.compare_faces(databaseencoding,encodeface)
+#     facedis = face_recognition.face_distance(databaseencoding,encodeface)
+#     matchindex = np.argmin(facedis)
+#     if matches[matchindex]:
+#         name = classname[matchindex].upper()
+#         print(name)
 # finding face locations in captured video and encodings
-facecurrframe = face_recognition.face_locations(imgs)
-encodecurrframe = face_recognition.face_encodings(imgs,facecurrframe)
+facecurrframe = face_recognition.face_locations(img)
+encodecurrframe = face_recognition.face_encodings(img,facecurrframe)
 for encodeface,faceloc in zip(encodecurrframe,facecurrframe):
     matches = face_recognition.compare_faces(databaseencoding,encodeface)
     facedis = face_recognition.face_distance(databaseencoding,encodeface)
     # print(facedis)
     matchindex = np.argmin(facedis)
-
-    if matches[matchindex]:
-        name = classname[matchindex].upper()
-        print(name)
+    name = classname[matchindex].upper()
+    print(name)
+    # if matches[matchindex]:
+    #     name = classname[matchindex].upper()
+    #     print(name)
         # y1,x2,y2,x1 = faceloc
         # y1,x2,y2,x1 = y1*4,x2*4,y2*4,x1 *4
         # cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
