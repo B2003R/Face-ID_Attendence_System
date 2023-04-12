@@ -47,7 +47,7 @@ while(True):
     # fing encodings
     # try:
     #     unknown_face_encoding = face_recognition.face_encodings(img)[0]
-    #     matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)
+    #     matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)git
     # except KeyError:
     #     print('Invalid Id')
     #     continue
