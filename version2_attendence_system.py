@@ -32,49 +32,50 @@ while(True):
     print("Please look into the camera :")
     unknown_face_encoding = []
     while(len(unknown_face_encoding) == 0):
+        #showing video and taking 1 pic from the video
+        i = 0
+        flag = 0
+        while(i<100):
+            i = i+1
+            ran , img = cap.read()
+            #resing the img
+            imgs  = cv2.resize(img,(0,0),None,0.25,0.25);
+            #taking a picture
+            if(i == 50):
+                img1 = imgs
+            facloc = face_recognition.face_locations(imgs)
+            # print(facloc," ",len(facloc))
+            if(len(facloc) != 0):
+                y1,x2,y2,x1 = facloc[0]
+                y1,x2,y2,x1 = y1*4,x2*4,y2*4,x1*4
+                cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
+            cv2.imshow('webcam', img)
+            cv2.waitKey(1)
+        # if(len(img1) == 0):
+        #     print('Face not matched')
+        #     cv2.destroyAllWindows()
+        #     continue
+        cv2.destroyAllWindows()
+
         # take a pic
-        success , img = cap.read()
+        # success , img = cap.read()
         # resize the pic
-        img = cv2.resize(img,(0,0),None,0.25,0.25)
+        # img = cv2.resize(img,(0,0),None,0.25,0.25)
         # convert to rgb
-        img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img1,cv2.COLOR_BGR2RGB)
         unknown_face_encoding = face_recognition.face_encodings(img)
+        if(len(unknown_face_encoding) == 0):
+            print('Face not Matched')
+            flag = 1
+            break
+    if(flag == 1):
+        continue
     try:
         matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)
+        # print(matchrate)
     except KeyError:
         print('Invalid ID')
         continue
-    # fing encodings
-    # try:
-    #     unknown_face_encoding = face_recognition.face_encodings(img)[0]
-    #     matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)git
-    # except KeyError:
-    #     print('Invalid Id')
-    #     continue
-    # except IndexError:
-    #     i =0
-    #     flag = 0
-    #     while(i<100):
-    #         i = i+1
-    #         s,img = cap.read()
-    #         if(i==50):
-    #             print("Please wait")
-    #         unknown_face_encoding = face_recognition.face_encodings(img)
-    #         # print(len(unknown_face_encoding))
-    #         if(len(unknown_face_encoding) == 1):
-    #             try:
-    #                 matchrate = face_recognition.compare_faces(data[id], unknown_face_encoding)
-    #             except KeyError:
-    #                 print('Invalid id')
-    #                 break
-    #             # print("Face Recognition SuccessFull")
-    #             # print(matchrate)
-    #             flag = 1
-    #             break
-    #     if(flag == 0):
-    #         print("Face Recognition Failed")
-    #         continue
-    # print(type(matchrate))
     if(matchrate[0] == True):
         print('Attendence Marked')
     else:
