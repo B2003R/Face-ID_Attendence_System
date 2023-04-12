@@ -72,7 +72,7 @@ while(True):
         continue
     try:
         matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)
-        # print(matchrate)
+        print(matchrate)
     except KeyError:
         print('Invalid ID')
         continue
