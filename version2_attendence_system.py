@@ -3,6 +3,7 @@ import numpy
 import cv2
 import os
 import time
+from pyzbar.pyzbar import decode
 
 path = 'faces'
 images = []
@@ -21,14 +22,30 @@ for img in images:
     known_face_encodings.append(currimg_encoding)
 
 data = {}
+
 i = 0
 while(i < len(classname)):
     data[classname[i]] = known_face_encodings[i]
     i = i+1
-
 cap = cv2.VideoCapture(0)
+
 while(True):
-    id = input("Enter the id :")
+
+
+    # id = input("Enter the id :")
+    # open camera and scanning qr
+    print("Please Show you QR CODE")
+    id = ''
+    while (id == ''):
+        suc, qr = cap.read()
+        q = decode(qr)
+        # cv2.imshow('QR',qr)
+        # print(qr)
+        cv2.imshow('Webcam',qr)
+        cv2.waitKey(1)
+        for i in q:
+            id = i.data.decode()
+    cv2.destroyAllWindows()
     print("Please look into the camera :")
     unknown_face_encoding = []
     while(len(unknown_face_encoding) == 0):
@@ -65,18 +82,20 @@ while(True):
         img = cv2.cvtColor(img1,cv2.COLOR_BGR2RGB)
         unknown_face_encoding = face_recognition.face_encodings(img)
         if(len(unknown_face_encoding) == 0):
-            print('Face not Matched')
+            print('Please try again')
             flag = 1
             break
     if(flag == 1):
         continue
     try:
         matchrate = face_recognition.compare_faces(data[id],unknown_face_encoding)
-        print(matchrate)
+        facedist = face_recognition.face_distance(data[id],unknown_face_encoding)
     except KeyError:
         print('Invalid ID')
         continue
-    if(matchrate[0] == True):
+    if(matchrate[0] == True and facedist < 0.5):
         print('Attendence Marked')
     else:
         print('Face not matched')
+    # print(facedist)
+    # print(matchrate)
